@@ -31,11 +31,11 @@ class AdminSiteTests(TestCase):
     def test_user_change_page(self):
         """Teste that the user edit page works"""
         url = reverse('admin:core_user_change', args=[self.user.id])
-        #/admin/core/user/1
+        # /admin/core/user/1
         res = self.client.get(url)
 
         self.assertEqual(res.status_code, 200)
-    
+
     def test_create_user_page(self):
         """Test that the create user page works"""
         url = reverse('admin:core_user_add')
