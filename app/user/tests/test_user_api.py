@@ -10,6 +10,7 @@ CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
 
+
 def create_user(**params):
     return get_user_model().objects.create_user(**params)
 
@@ -136,7 +137,7 @@ class PrivateUserApiTests(TestCase):
         """Test updating the user profile for authenticated user"""
         payload = {
             'name': 'new name',
-            'password': 'newPassword1234'            
+            'password': 'newPassword1234'
         }
         res = self.client.patch(ME_URL, payload)
 
