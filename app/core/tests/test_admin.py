@@ -6,7 +6,7 @@ from django.urls import reverse
 class AdminSiteTests(TestCase):
 
     def setUp(self):
-        print("[AdminSiteTest]:: Setting up")
+        # print("[AdminSiteTest]:: Setting up")
         self.client = Client()
         self.admin_user = get_user_model().objects.create_superuser(
             email="admin@haupai.com",
@@ -21,7 +21,7 @@ class AdminSiteTests(TestCase):
 
     def test_users_listed(self):
         """Test that user are listed on users page"""
-        print("[AdminSiteTest]:: Test User Listed")
+        # print("[AdminSiteTest]:: Test User Listed")
         url = reverse('admin:core_user_changelist')
         res = self.client.get(url)
 
