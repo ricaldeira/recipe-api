@@ -6,7 +6,7 @@ from core.models import Tag, Ingredient
 from . import serializers
 
 
-class TagViewSet(viewsets.GenericViewSet, 
+class TagViewSet(viewsets.GenericViewSet,
                  mixins.ListModelMixin,
                  mixins.CreateModelMixin):
     """Manage tags in the database"""
@@ -24,14 +24,18 @@ class TagViewSet(viewsets.GenericViewSet,
         serializer.save(user=self.request.user)
 
 
-class IngredientViewSet(viewsets.GenericViewSet, 
-                        mixins.ListModelMixin):
-    """Manage ingredientes in the database"""    
+class IngredientViewSet(viewsets.GenericViewSet,
+                        mixins.ListModelMixin, mixins.CreateModelMixin):
+    """Manage ingredientes in the database"""
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
-    queryset = Ingredient.objects.all()    
+    queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
 
     def get_queryset(self):
         """Return objects for the current authenticated user"""
         return self.queryset.filter(user=self.request.user).order_by('-name')
+
+    def perform_create(self, serializer):
+        """Create new Ingredient"""
+        serializer.save(user=self.request.user)

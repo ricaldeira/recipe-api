@@ -16,13 +16,12 @@ class PublicIngredientApiTests(TestCase):
     """Publicly available ingredientes API"""
     def setUp(self):
         self.client = APIClient()
-    
+
     def test_login_required(self):
-        """Test that login is required to access the endpoint"""        
+        """Test that login is required to access the endpoint"""
         res = self.client.get(INGREDIENT_URL)
-        # self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)        
-        
-    
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateIngredientsApiTests(TestCase):
     """Test ingredients can be listed by authorized user"""
@@ -45,7 +44,7 @@ class PrivateIngredientsApiTests(TestCase):
         serializer = IngredientSerializer(ingredients, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
-    
+
     def test_ingredients_limited_to_user(self):
         """Test that ingredients for the authenticated user are returned"""
         user2 = get_user_model().objects.create_user(
@@ -60,7 +59,21 @@ class PrivateIngredientsApiTests(TestCase):
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['name'], ingre.name)
 
+    def test_create_ingredient_success(self):
+        """Testing create ingredient"""
+        payload = {
+            'name': 'Cabbage'
+        }
+        self.client.post(INGREDIENT_URL, payload)
+        exists = Ingredient.objects.filter(
+            user=self.user,
+            name=payload['name']
+        ).exists()
 
+        self.assertTrue(exists)
 
-
-            
+    def test_create_ingridient_invalid(self):
+        """Test invalid create ingredient fails"""
+        payload = {'name': ''}
+        res = self.client.post(INGREDIENT_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
