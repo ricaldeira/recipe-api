@@ -14,8 +14,8 @@ services:
                  python manage.py runserver 0.0.0.0:8000"
         environment:
             - DB_HOST=db
-            - DB_NAME=app
-            - DB_USER=postgres
+            - DB_NAME=food_db
+            - DB_USER=haupai
             - DB_PASS=717rco66
         depends_on: 
             - db
