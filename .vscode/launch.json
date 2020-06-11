@@ -5,13 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Django",
+            "name": "Backend",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/backend/manage.py",
             "args": [
                 "runserver",
                 "--noreload"
+            ],
+            "django": true
+        }
+        {
+            "name": "Debug Testes",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/manage.py",
+            "console": "integratedTerminal",
+            "args": [
+                "test"                
             ],
             "django": true
         }
