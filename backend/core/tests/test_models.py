@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core import models
 
+
 def sample_user(email='teste@haupai.com', password='123456'):
     """Create a sample user"""
     return get_user_model().objects.create_user(email, password)
@@ -68,7 +69,7 @@ class ModelTests(TestCase):
         """Teste the recipe string representation"""
         recipe = models.Recipe.objects.create(
             user=sample_user(),
-            title='Steak and mushroom sauce',            
+            title='Steak and mushroom sauce',
             time_minutes=5,
             price=5.00
         )
