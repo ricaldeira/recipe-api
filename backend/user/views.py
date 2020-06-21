@@ -6,9 +6,6 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import UserSerializer, AuthTokenSerializer 
-from .serializers import CitySerializer, StateSerializer, \
-    AddressSerializer
-from core.models import State, City, Address
 
 class CreateUserView(generics.CreateAPIView):
     """Create a new user in the system"""
@@ -30,31 +27,3 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authenticated user"""
         return self.request.user
-
-class StateViewSet(generics.CreateAPIView):
-    queryset = State.objects.all()
-    serializer_class = StateSerializer
-
-
-class CityViewSet(generics.ListCreateAPIView):
-    queryset = City.objects.all()
-    serializer_class = CitySerializer
-
-
-class AddressListViewSet(generics.ListCreateAPIView):
-    queryset = Address.objects.all()
-    serializer_class = AddressSerializer
-
-class AddressViewSet(viewsets.GenericViewSet, 
-                    mixins.ListModelMixin,
-                    mixins.CreateModelMixin
-                    ):
-    queryset = Address.objects.all()
-    serializer_class = AddressSerializer
-    lookup_field = 'id'
-    lookup_url_kwarg = 'id'
-    authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated,) 
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.requests.user)

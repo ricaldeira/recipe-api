@@ -23,7 +23,7 @@
             "console": "integratedTerminal",
             "args": [
                 "test",
-                "user.tests"                
+                "address"
             ],
             "django": true
         }
