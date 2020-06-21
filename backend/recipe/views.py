@@ -18,7 +18,7 @@ class BaseRecipeAttrViewSet(viewsets.GenericViewSet,
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
         assigned_only = bool(
-            int(self.request.query_params.get('assigned_only',0))
+            int(self.request.query_params.get('assigned_only', 0))
         )
         queryset = self.queryset
         if assigned_only:
@@ -45,6 +45,7 @@ class IngredientViewSet(BaseRecipeAttrViewSet):
     serializer_class = serializers.IngredientSerializer
 
 
+
 class RecipeViewSet(viewsets.ModelViewSet):
     """Manage recipe  in the database"""
     serializer_class = serializers.RecipeSerializer
@@ -55,22 +56,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def _params_to_ints(self, qs):
         """Convert a list of string Ids to a list of integers"""
         return [int(str_id) for str_id in qs.split(',')]
-        
+
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        tags = self.request.query_params.get('tags')                
-        ingredients = self.request.query_params.get('ingredients')        
+        tags = self.request.query_params.get('tags')
+        ingredients = self.request.query_params.get('ingredients')
         queryset = self.queryset
         if tags:
-            tag_ids = self._params_to_ints(tags)                        
+            tag_ids = self._params_to_ints(tags)
             queryset = queryset.filter(tags__id__in=tag_ids)
-            
+
         if ingredients:
-            ingredient_ids = self._params_to_ints(ingredients)            
+            ingredient_ids = self._params_to_ints(ingredients)
             queryset = queryset.filter(ingredients__id__in=ingredient_ids)
 
         return queryset.filter(user=self.request.user)
-
 
     def get_serializer_class(self):
         """Return apropriate serializer class"""
@@ -92,14 +92,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(
             recipe,
             data=request.data
-        )        
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(
                 serializer.data,
                 status=status.HTTP_200_OK
             )
-        
+
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST

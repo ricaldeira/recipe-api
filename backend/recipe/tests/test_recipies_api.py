@@ -16,6 +16,7 @@ from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 
 RECIPE_URL = reverse('recipe:recipe-list')
 
+
 def image_upload_url(recipe_id):
     """Return URL for recipe image upload"""
     return reverse('recipe:recipe-upload-image', args=[recipe_id])
@@ -25,6 +26,7 @@ def detail_url(recipe_id):
     """Return recipe detail url"""
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
+
 def sample_tag(user, name='Main course'):
     """Create sample tag"""
     return Tag.objects.create(user=user, name=name)
@@ -33,6 +35,7 @@ def sample_tag(user, name='Main course'):
 def sample_ingredient(user, name='cabbage'):
     """Create sample ingrediente"""
     return Ingredient.objects.create(user=user, name=name)
+
 
 def sample_recipe(user, **params):
     """Return a sample recipe"""
@@ -44,7 +47,6 @@ def sample_recipe(user, **params):
     defaults.update(params)
 
     return Recipe.objects.create(user=user, **defaults)
-
 
 
 class PublicRecipeApiTests(TestCase):
@@ -99,7 +101,6 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data, serializer.data)
 
-    
     def test_view_recipe_detail(self):
         """Test viewing  recipe detail"""
         recipe = sample_recipe(user=self.user)
@@ -124,7 +125,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe = Recipe.objects.get(id=res.data['id'])
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(recipe, key))
-        
+
     def test_create_recipe_with_tags(self):
         """Test creating recipe with tags"""
         tag1 = sample_tag(user=self.user, name='Vegan')
@@ -143,7 +144,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(tags.count(), 2)
         self.assertIn(tag1, tags)
         self.assertIn(tag2, tags)
-    
+
     def test_create_recipe_with_ingredients(self):
         """Test wth ingredients"""
         ingredient1 = sample_ingredient(user=self.user, name='Prawns')
@@ -161,7 +162,6 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(ingredients.count(), 2)
         self.assertIn(ingredient1, ingredients)
         self.assertIn(ingredient2, ingredients)
-        
 
     def test_partial_update_recupe(self):
         """Test recipe with PATCH"""
@@ -171,15 +171,15 @@ class PrivateRecipeApiTests(TestCase):
 
         payload = {'title': 'Chicken tikka', 'tags': [new_tag.id]}
         url = detail_url(recipe.id)
-        
-        self.client.patch(url,payload)
+
+        self.client.patch(url, payload)
 
         recipe.refresh_from_db()
         self.assertEqual(recipe.title, payload['title'])
         tags = recipe.tags.all()
         self.assertEqual(len(tags), 1)
         self.assertIn(new_tag, tags)
-    
+
     def test_full_update_recipe(self):
         """Test updating with PUT"""
         recipe = sample_recipe(user=self.user)
@@ -196,7 +196,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(recipe.title, payload['title'])
         self.assertEqual(recipe.time_minutes, payload['time_minutes'])
         self.assertEqual(recipe.price, payload['price'])
-        
+
         # with PUT other fields not informed should be erased
         tags = recipe.tags.all()
         self.assertEqual(len(tags), 0)
@@ -214,7 +214,7 @@ class RecipeImageUploadTests(TestCase):
 
     def tearDown(self):
         self.recipe.image.delete()
-    
+
     def test_upload_image_to_recipe(self):
         """Test uploading image to recipe"""
         url = image_upload_url(self.recipe.id)
@@ -223,7 +223,7 @@ class RecipeImageUploadTests(TestCase):
             img.save(ntf, format='JPEG')
             ntf.seek(0)
             res = self.client.post(url, {'image': ntf}, format='multipart')
-            
+
         self.recipe.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn('image', res.data)
@@ -234,10 +234,10 @@ class RecipeImageUploadTests(TestCase):
         url = image_upload_url(self.recipe.id)
         res = self.client.post(url, {'image': 'notImage'}, format='multipart')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_filter_recipe_by_tag(self):
         """Test returning recipes with specific tags"""
-        
+
         recipe1 = sample_recipe(user=self.user, title='Veg curry')
         recipe2 = sample_recipe(user=self.user, title='Tahini')
         tag1 = sample_tag(user=self.user, name='Vegan')
@@ -259,7 +259,7 @@ class RecipeImageUploadTests(TestCase):
         self.assertNotIn(serializer3.data, res.data)
 
     def test_filter_recipes_by_ingredients(self):
-        """Filter with ingredients"""        
+        """Filter with ingredients"""
         recipe01 = sample_recipe(user=self.user, title='Veg curry')
         recipe02 = sample_recipe(user=self.user, title='Tahini')
         ingredient1 = sample_ingredient(user=self.user, name='Feta cheese')
@@ -273,13 +273,12 @@ class RecipeImageUploadTests(TestCase):
         res = self.client.get(
             RECIPE_URL,
             {'ingredients': '{},{}'.format(ingredient1.id, ingredient2.id)}
-            # {'ingredients': f'{ingredient1.id},{ingredient2.id}'}            
+            # {'ingredients': f'{ingredient1.id},{ingredient2.id}'}
         )
         serializer01 = RecipeSerializer(recipe01)
         serializer02 = RecipeSerializer(recipe02)
         serializer03 = RecipeSerializer(recipe03)
-        
+
         self.assertIn(serializer01.data, res.data)
         self.assertIn(serializer02.data, res.data)
         self.assertNotIn(serializer03.data, res.data)
-       

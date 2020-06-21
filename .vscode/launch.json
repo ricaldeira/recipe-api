@@ -10,11 +10,11 @@
             "request": "launch",
             "program": "${workspaceFolder}/backend/manage.py",
             "args": [
-                "runserver",
-                "--noreload"
+                "runserver",                
+                "0:8000"
             ],
             "django": true
-        }
+        },
         {
             "name": "Debug Testes",
             "type": "python",
@@ -22,7 +22,8 @@
             "program": "${workspaceFolder}/backend/manage.py",
             "console": "integratedTerminal",
             "args": [
-                "test"                
+                "test",
+                "user.tests"                
             ],
             "django": true
         }

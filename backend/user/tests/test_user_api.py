@@ -4,14 +4,14 @@ from django.urls import reverse
 
 from rest_framework.test import APIClient
 from rest_framework import status
-
+from core.models import Address, City, State
 
 CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
+ADDRESS_URL= reverse('user:address')    
 
-
-def create_user(**params):
+def create_user(**params):    
     return get_user_model().objects.create_user(**params)
 
 
@@ -111,12 +111,31 @@ class PublicUserApiTests(TestCase):
 class PrivateUserApiTests(TestCase):
     """Test API request that require authentication"""
     def setUp(self):
+
+
         self.user = create_user(
             email='test@haupai.com',
             password='123456',
-            name='Test'
+            name='Test'           
         )
+        
+
+        self.state = State.objects.create(
+            name='Santa Catarina',
+            init='SC'
+        )
+        self.city = City.objects.create(
+            name='Florianopolis',
+            state= self.state
+        )
+        self.address = Address.objects.create( 
+            street= 'Rua011',
+            number= '1',
+            zip= '0000000',
+            city= self.city
+        )    
         self.client = APIClient()
+        
         self.client.force_authenticate(user=self.user)
 
     def test_rerieve_profile_success(self):
@@ -125,7 +144,8 @@ class PrivateUserApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, {
             'name': self.user.name,
-            'email': self.user.email
+            'email': self.user.email,
+        
         })
 
     def test_post_me_not_allowed(self):
@@ -144,4 +164,17 @@ class PrivateUserApiTests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.name, payload['name'])
         self.assertTrue(self.user.check_password(payload['password']))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_create_address(self):
+        """Test create address with a user"""      
+        payload = {
+            'street': 'Rua da Silva',
+            'number': '01',
+            'zip': '990000'
+            'city': 1
+        }
+
+        res = self.client.patch(ADDRESS_URL, payload)
+        print(res)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

@@ -46,6 +46,49 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
 
 
+class BusinessUser(User):
+    """User with bussiness status"""
+    cnpj = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.cnpj
+    
+
+
+class Address(models.Model):
+    street = models.CharField(max_length=255)
+    number = models.CharField(max_length=30)
+    city = models.ForeignKey('City', on_delete=models.PROTECT)
+    zip = models.CharField(max_length=12)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return '%s: %s' % (self.street, self.number)
+    
+
+
+class City(models.Model):
+    """City model"""
+    name = models.CharField(max_length=255)
+    state = models.ForeignKey('State', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+    
+
+class State(models.Model):
+    """State model"""
+    name = models.CharField(max_length=255)
+    init = models.CharField(max_length=2)
+
+    def __str__(self):
+        return self.name
+    
+
+
 class Tag(models.Model):
     """Tags for a recipe"""
     name = models.CharField(max_length=255)
@@ -84,5 +127,5 @@ class Recipe(models.Model):
     tags = models.ManyToManyField('Tag')
     image = models.ImageField(null=True, upload_to=recipe_image_file_path)
 
-    def __str__(self):        
+    def __str__(self):
         return self.title
