@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializers import CitySerializer, StateSerializer, \
     AddressSerializer
-from core.models import State, City, Address
+from address.models import State, City, Address
 
 
 class StateViewSet(generics.CreateAPIView):
@@ -34,4 +34,4 @@ class AddressViewSet(viewsets.GenericViewSet,
     permission_classes = (IsAuthenticated,) 
 
     def perform_create(self, serializer):
-        serializer.save(user=self.requests.user)
+        serializer.save(user=self.request.user)

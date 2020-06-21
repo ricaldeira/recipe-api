@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.models import Address, State, City
+from address.models import Address, State, City
 from address.serializers import AddressSerializer
 
 ADDRESS_URL = reverse('address:address-list')

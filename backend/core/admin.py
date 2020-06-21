@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext as _
 from core import models
+from address import models as address_models
 
 
 class UserAdmin(BaseUserAdmin):
@@ -29,6 +30,7 @@ admin.site.register(models.Tag)
 admin.site.register(models.Ingredient)
 admin.site.register(models.Recipe)
 admin.site.register(models.BusinessUser)
-admin.site.register(models.Address)
-admin.site.register(models.City)
-admin.site.register(models.State)
+
+admin.site.register(address_models.Address)
+admin.site.register(address_models.City)
+admin.site.register(address_models.State)
